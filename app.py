@@ -304,5 +304,41 @@ def listevente():
     conn.close()
     return render_template("./vente/listevente.html", data=data)
 
+@app.route("/ajoutvente", methods=["GET", "POST"])
+def ajoutvente():
+
+    # Connexion à la base de données
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM Produit")
+    prods = cursor.fetchall()
+    cursor.execute('SELECT * FROM Magasin')
+    mags = cursor.fetchall()
+
+    if request.method == 'POST':
+        nomproduit = request.form["nomproduit"]
+        nommagasin = request.form["nommagasin"]
+        quantite = request.form["quantite"]
+        prixtotal = request.form["prixtotal"]
+        date = request.form["date"]
+
+        cursor.execute('''
+        SELECT Produit.PrixUnitaire FROM Produit WHERE Produit.CodeProduit = ?
+        ''', nomproduit)
+        prixunitaire = cursor.fetchone()
+        prixtotal = int(quantite) * int(prixunitaire[0])
+        cursor.execute('''
+            INSERT INTO Vente (Quantitevendu, PrixTotal, IdProduit, IdMagasin)
+            VALUES ( ?, ?, ?, ?)
+         ''', (quantite, prixtotal, nomproduit, nommagasin))
+        conn.commit()
+        conn.close()
+        flash("Votre vente a été enregistré avec succès !", 'info')
+        return redirect(url_for('listevente'))
+    data = ''
+    return render_template("ajoutvente.html", data=data, mags=mags, prods=prods)
+
 if __name__ == '__main__':
     app.run(debug=True)
