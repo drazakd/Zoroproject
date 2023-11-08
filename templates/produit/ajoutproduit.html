@@ -1,0 +1,55 @@
+{% extends "./accueil.html" %}
+
+{% block centre %}
+<div class="droite">
+            <div class="container1">
+
+                <div class="tab">
+                    <div class="minitab2">
+
+                        <form class="formu" method="POST">
+                            <h3>Ajouter un nouveau produit</h3>
+
+                            <div class="di">
+                                <div>
+                                    <label for="name">Nom</label>
+                                </div>
+                                <div>
+                                    <input type="text" id="name" name="nom" placeholder="Nom" size="40" value= "{{data[1]}}" required>
+                                </div>
+                            </div>
+                            <div class="di">
+                                <div>
+
+                                    <label for="catproduit">Categorieproduit: </label>
+                                </div>
+                                <div>
+
+                                    <input type="text" id="catproduit" name="catproduit" placeholder="catproduit" size="40" value= "{{data[2]}}" required>
+                                </div>
+                            </div>
+
+                            <div class="di">
+                                <div>
+
+                                    <label for="PrixUnitaire">PrixUnitaire: </label>
+                                </div>
+                                <div>
+
+                                    <input type="integer" id="prix" name="prixunitaire" placeholder="PrixUnitaire" size="40" value= "{{data[3]}}" required>
+                                </div>
+                            </div>
+                            <div>
+                                <!-- bouton envoyer -->
+                                <button class="btg" type="submit"><a href="{{ url_for('accueil') }}">Retour</a></button>
+                                <button class="btd" type="submit">Valider</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+</div>
+{% endblock %}
+

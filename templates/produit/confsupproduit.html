@@ -1,0 +1,34 @@
+{% extends "./accueil.html" %}
+
+{% block centre %}
+<div class="droite">
+            <div class="container1">
+
+                <div class="tab">
+                    <div class="minitab2">
+                        <div class="tabsup">
+                            <h3>
+                                Suppression de {{data[1]}}
+                            </h3>
+
+                            <div class="messagesupprimer">
+                                <div class="messageconfirm">
+                                    <p class="p1">Vous êtes sur le point de supprimer {{data[1]}}. Êtes-vous </p>
+                                    <p>sûr de vouloir continuer ?</p>
+                                </div>
+                                <div class="touchconfirm">
+                                    <!-- bouton envoyer -->
+                                    <button class="btg" type="submit"><a href="{{ url_for('listeproduit') }}">Retour</a></button>
+                                    <button class="btd" type="submit"><a href="{{ url_for('supprimeproduit', item_id=data[0]) }}">Confirmer</a></button>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+</div>
+{% endblock %}
+
