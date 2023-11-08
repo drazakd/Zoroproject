@@ -11,6 +11,7 @@ def login():
 def accueil():
     return render_template("accueil.html")
 
+# Partie Produit
 @app.route("/listeproduit", methods=['GET', 'POST'])
 def listeproduit():
     # -------------------------------------------------------------
@@ -35,6 +36,7 @@ def listeproduit():
     # Affichage des données dans le template HTML
     return render_template("./produit/listeproduit.html", data=data)
 
+# Formulaire du produit
 @app.route("/ajoutproduit", methods=["GET", "POST"])
 def ajoutproduit():
     # Si la requête est une requête POST, insérer le nouveau produit dans la base de données
@@ -64,6 +66,7 @@ def ajoutproduit():
     data = ''
     return render_template("./produit/ajoutproduit.html", data=data)
 
+# Route de page de confirmation de suppression produit
 @app.route("/confsupproduit/<int:item_id>", methods=['GET', 'POST'])
 def confsupproduit(item_id):
     item_id = int(item_id)
@@ -80,6 +83,7 @@ def confsupproduit(item_id):
     # flash (f'Le produit numéro {item_id} a été supprimé avec succès !', 'info')
     return render_template("./produit/confsupproduit.html", data=data)
 
+# suppression du produit
 @app.route('/supprimeproduit/<int:item_id>', methods=['GET', 'POST'])
 def supprimeproduit(item_id):
     item_id = int(item_id)
@@ -100,6 +104,7 @@ def supprimeproduit(item_id):
     flash(f'Le produit numéro {item_id} a été supprimé avec succès !', 'info')
     return redirect(url_for('listeproduit'))
 
+# modification du produit
 @app.route('/modifproduit/<int:item_id>', methods=['GET', 'POST'])
 def modifproduit(item_id):
     item_id = int(item_id)
