@@ -28,6 +28,8 @@ def login():
     else:
         return redirect(url_for('accueil'))
 
+
+# route accueil
 @app.route("/accueil")
 def accueil():
     return render_template("accueil.html")
@@ -489,6 +491,139 @@ def modifvente(item_id):
     return render_template('./vente/ajoutvente.html', magsel=magsel, prodsel=prodsel, data=data, prods=prods, mags=mags,
                            selected=True)
 
+
+
+# Route vente
+@app.route("/listestock")
+def listestock():
+
+    # Connexion à la base de données
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT Stock.IdStock, Produit.NomProduit, Magasin.NomMagasin, Stock.Quantitestock 
+    FROM Magasin, Produit, Stock
+    WHERE Magasin.IdMagasin = Stock.IdMagasin AND Produit.IdProduit = Stock.IdProduit
+    """)
+
+    data = cursor.fetchall()
+    conn.close()
+    return render_template("./Stock/listestock.html", data=data)
+
+@app.route("/ajoutstock", methods=["GET", "POST"])
+def ajoutstock():
+
+    # Connexion à la base de données
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM Produit")
+    prods = cursor.fetchall()
+    cursor.execute('SELECT * FROM Magasin')
+    mags = cursor.fetchall()
+
+    if request.method == 'POST':
+        nomproduit = request.form["nomproduit"]
+        nommagasin = request.form["nommagasin"]
+        quantite = request.form["quantite"]
+
+        cursor.execute('''
+            INSERT INTO Stock (Quantitestock, IdProduit, IdMagasin)
+            VALUES ( ?, ?, ?)
+         ''', (quantite, nomproduit, nommagasin))
+        conn.commit()
+        conn.close()
+        flash("Votre stock a été enregistré avec succès !", 'info')
+        return redirect(url_for('listestock'))
+    data = ''
+    return render_template("./Stock/ajoutstock.html", data=data, mags=mags, prods=prods)
+
+# page de confirmation de suppression vente
+@app.route("/confsupstock/<int:item_id>", methods=['GET', 'POST'])
+def confsupstock(item_id):
+    item_id = int(item_id)
+
+    # Connexion à la base de données
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute('''
+    SELECT IdStock, Produit.NomProduit, Magasin.NomMagasin
+    FROM Stock 
+    INNER JOIN Produit ON Vente.IdProduit=Produit.IdProduit
+    INNER JOIN Magasin ON Vente.IdMagasin=Magasin.IdMagasin
+    WHERE IdStock = ?
+    ''', (item_id,))
+    data = cursor.fetchone()
+    conn.commit()
+    conn.close()
+
+    # flash (f'Le produit numéro {item_id} a été supprimé avec succès !', 'info')
+    return render_template("./Stock/confsupstock.html", data=data)
+
+# suppression de vente
+@app.route('/supprimestock/<int:item_id>', methods=['GET', 'POST'])
+def supprimestock(item_id):
+    item_id = int(item_id)
+
+    # Connexion à la base de données
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute('DELETE FROM Stock WHERE IdStock = ?', item_id)
+    conn.commit()
+    conn.close()
+    flash(f'La Stock numéro {item_id} a été supprimé avec succès !', 'info')
+    return redirect(url_for('listestock'))
+
+@app.route('/modifstock/<int:item_id>', methods=['GET', 'POST'])
+def modifstock(item_id):
+    item_id = int(item_id)
+
+    # Connexion à la base de données
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM Produit")
+    prods = cursor.fetchall()
+    cursor.execute('SELECT * FROM Magasin')
+    mags = cursor.fetchall()
+    cursor.execute("""
+        SELECT Magasin.NomMagasin, Produit.NomProduit
+        FROM Stock
+        INNER JOIN Magasin ON Vente.IdMagasin = Magasin.IdMagasin
+        INNER JOIN Produit ON Vente.IdProduit = Produit.IdProduit
+        WHERE IdVente = ?
+    """, item_id)
+    magsel, prodsel = cursor.fetchone()
+    cursor.execute('''
+    SELECT Stock.Quantitestock
+    FROM Stock
+    WHERE IdStock = ?
+    ''', item_id)
+    data = cursor.fetchone()
+    if request.method == 'POST':
+        nomproduit = request.form["nomproduit"]
+        nommagasin = request.form["nommagasin"]
+        quantite = request.form["quantite"]
+
+        cursor.execute('''
+            UPDATE Stock
+            SET QuantiteStock = ?, IdProduit = ?, IdMagasin = ?
+            WHERE IdStock = ?
+         ''', (quantite, nomproduit, nommagasin, item_id))
+        conn.commit()
+        conn.close()
+        flash(f'Le stock numéro {item_id} a été modifié avec succès !', 'info')
+        return redirect(url_for('listestock'))
+    return render_template('./stock/ajoutstock.html', magsel=magsel, prodsel=prodsel, data=data, prods=prods, mags=mags,
+                           selected=True)
 
 if __name__ == '__main__':
     app.run(debug=True)

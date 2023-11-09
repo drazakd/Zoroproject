@@ -1,0 +1,55 @@
+{% extends "./accueil.html" %}
+
+{% block reload %}
+<script>
+  setTimeout(function(){
+    window.location.reload();
+  }, 8000);
+</script>
+{% endblock %}
+
+{% block centre %}
+<div class="droite">
+            <div class="container1">
+                <div class="ajouter hover"><a href="{{ url_for('ajoutstock') }}">ajouter</a></div>
+                <div class="tab">
+                    <div class="minitab">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                        <h3>Liste des stock</h3>
+                        <table border="2">
+                          <tr>
+                              <td class="id un">IdStock</td>
+                              <td class="un">Nom Produit</td>
+                              <td class="un">Nom Magasin</td>
+                              <td class="un">Quantité</td>
+                              <td class="un">Action</td>
+                          </tr>
+                          {% for row in data %}
+                          <tr>
+                            <td> {{ row[0] }} </td>
+                            <td> {{ row[1] }} </td>
+                            <td> {{ row[2] }} </td>
+                            <td> {{ row[3] }} </td>
+
+
+                            <td>
+                              <button class="modifier"><a href="{{ url_for('modifstock', item_id=row[0]) }}">Modifier</a></button>
+                              <button class="Supprimer"><a href="{{ url_for('confsupstock', item_id=row[0]) }}">Supprimer</a></button>
+                            </td>
+                          </tr>
+                          {% endfor %}
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+</div>
+{% endblock %}

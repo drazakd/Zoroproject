@@ -1,0 +1,60 @@
+{% extends "./accueil.html" %}
+
+{% block centre %}
+<div class="droite">
+            <div class="container1">
+
+                <div class="tab">
+                    <div class="minitab2">
+
+                        <form class="formu" method="POST">
+                            <h3>Ajouter un nouveau Stock</h3>
+
+                            <div class="di">
+                                <div>
+                                    <label for="NomProduit">Nom Produit</label>
+                                </div>
+                                <div>
+                                    <select name="nomproduit" id="NomProduit">
+                                        {% for prod in prods %}
+                                            <option value="{{prod.0}}" selected>{{prod.1}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="di">
+                                <div>
+                                    <label for="NomMagasin">Nom Magasin</label>
+                                </div>
+                                <div>
+                                    <select name="nommagasin" id="NomMagasin">
+                                        {% for mag in mags %}
+                                            <option value="{{mag.0}}" selected>{{mag.1}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="di">
+                                <div>
+                                    <label for="Quantite">Quantité</label>
+                                </div>
+                                <div>
+
+                                    <input type="number" id="Quantite" name="quantite" placeholder="Quantité" size="40" value= "{{data[1]}}" required>
+                                </div>
+                            </div>
+
+                            <div>
+                                <!-- bouton envoyer -->
+                                <button class="btg" type="submit"><a href="{{ url_for('listestock') }}">Retour</a></button>
+                                <button class="btd" type="submit">Valider</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+</div>
+{% endblock %}
+
