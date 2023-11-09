@@ -321,24 +321,66 @@ def ajoutvente():
         nomproduit = request.form["nomproduit"]
         nommagasin = request.form["nommagasin"]
         quantite = request.form["quantite"]
-        prixtotal = request.form["prixtotal"]
         date = request.form["date"]
 
         cursor.execute('''
-        SELECT Produit.PrixUnitaire FROM Produit WHERE Produit.CodeProduit = ?
+        SELECT Produit.PrixUnitaire FROM Produit WHERE Produit.IdProduit = ?
         ''', nomproduit)
         prixunitaire = cursor.fetchone()
         prixtotal = int(quantite) * int(prixunitaire[0])
         cursor.execute('''
-            INSERT INTO Vente (Quantitevendu, PrixTotal, IdProduit, IdMagasin)
-            VALUES ( ?, ?, ?, ?)
-         ''', (quantite, prixtotal, nomproduit, nommagasin))
+            INSERT INTO Vente (Quantitevendu, PrixTotal, Datevente, IdProduit, IdMagasin)
+            VALUES ( ?, ?, ?, ?, ?)
+         ''', (quantite, prixtotal, date, nomproduit, nommagasin))
         conn.commit()
         conn.close()
         flash("Votre vente a été enregistré avec succès !", 'info')
         return redirect(url_for('listevente'))
     data = ''
-    return render_template("ajoutvente.html", data=data, mags=mags, prods=prods)
+    return render_template("./vente/ajoutvente.html", data=data, mags=mags, prods=prods)
+
+# page de confirmation de suppression vente
+@app.route("/confsupvente/<int:item_id>", methods=['GET', 'POST'])
+def confsupvente(item_id):
+    item_id = int(item_id)
+
+    # Connexion à la base de données
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute('''
+    SELECT IdVente, Produit.NomProduit, Magasin.NomMagasin
+    FROM Vente 
+    INNER JOIN Produit ON Vente.IdProduit=Produit.IdProduit
+    INNER JOIN Magasin ON Vente.IdMagasin=Magasin.IdMagasin
+    WHERE IdVente = ?
+    ''', (item_id,))
+    data = cursor.fetchone()
+    conn.commit()
+    conn.close()
+
+    # flash (f'Le produit numéro {item_id} a été supprimé avec succès !', 'info')
+    return render_template("./vente/confsupvente.html", data=data)
+
+# suppression de vente
+@app.route('/supprimevente/<int:item_id>', methods=['GET', 'POST'])
+def supprimevente(item_id):
+    item_id = int(item_id)
+
+    # Connexion à la base de données
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute('DELETE FROM Vente WHERE IdVente = ?', item_id)
+    conn.commit()
+    conn.close()
+    flash(f'La vente numéro {item_id} a été supprimé avec succès !', 'info')
+    return redirect(url_for('listevente'))
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

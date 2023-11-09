@@ -11,7 +11,7 @@
 {% block centre %}
 <div class="droite">
             <div class="container1">
-                <div class="ajouter hover"><a href="">ajouter</a></div>
+                <div class="ajouter hover"><a href="{{ url_for('ajoutvente') }}">ajouter</a></div>
                 <div class="tab">
                     <div class="minitab">
                         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -45,7 +45,7 @@
 
                             <td>
                               <button class="modifier"><a href="">Modifier</a></button>
-                              <button class="Supprimer"><a href="">Supprimer</a></button>
+                              <button class="Supprimer"><a href="{{ url_for('confsupvente', item_id=row[0]) }}">Supprimer</a></button>
                             </td>
                           </tr>
                           {% endfor %}
