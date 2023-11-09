@@ -10,10 +10,29 @@
 <body>
     {% include './partiel/header.html' %}
 
+    {% block reload %}
+<script>
+  setTimeout(function(){
+    window.location.reload();
+  }, 8000);
+</script>
+{% endblock %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <section class="main">
+
         <section class="container">
+
             <div class="formulaire">
-                <form action="{{ url_for('accueil') }}">
+                <form action="{{ url_for('login') }} " method = 'POST'>
                     <div>
                         <H2>Connectez-vous</H2>
                     </div>
@@ -22,14 +41,14 @@
                     </div>
                     <div>
                         <label for="motdepasse"></label>
-                        <input type="text" id="motdepasse" name="motdepasse" placeholder="Mot de passe" required>
+                        <input type="password" id="motdepasse" name="password" placeholder="Mot de passe" required>
                     </div>
                     <div>
                         <!-- bouton envoyer -->
                         <button type="submit">connexion</button>
                     </div>
                     <div>
-                        <p><a href="{{ url_for('accueil') }}">Si pas de compte inscrivez-vous</a></p>
+                        <p><a href="{{ url_for('inscription') }}">Si pas de compte inscrivez-vous</a></p>
                     </div>
 
                 </form>

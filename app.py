@@ -1,15 +1,75 @@
 from flask import Flask, render_template,url_for, flash, request, redirect
+
 import pyodbc
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'clés_flash'
-@app.route("/")
+
+
+@app.route('/', methods=['GET', 'POST'])
+def connexion():
+    return render_template('connexion.html')
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template("connexion.html")
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    username = request.form['identifiant']
+    password = request.form['password']
+
+    cursor.execute(" SELECT username, password from Comptes WHERE username = ? AND password = ?", (username, password))
+    list = cursor.fetchall()
+    conn.commit()
+    if len(list) == 0:
+        flash('echec de connexion veillez reessayer', 'danger' )
+        return redirect(url_for('connexion'))
+    else:
+        return redirect(url_for('accueil'))
 
 @app.route("/accueil")
 def accueil():
     return render_template("accueil.html")
+
+
+# route inscription
+@app.route("/inscription", methods=["POST", "GET"])
+def inscription():
+    username = request.form.get("identifiant")
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    # Vérifiez les champs du formulaire pour les erreurs
+
+    if not username:
+        return render_template("inscription.html", error="Le nom d'utilisateur est requis.")
+    if not email:
+        return render_template("inscription.html", error="L'adresse e-mail est requise.")
+    if not password:
+        return render_template("inscription.html", error="Le mot de passe est requis.")
+
+    # Insérez les informations d'identification de l'utilisateur dans la base de données
+
+    DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
+    conn = pyodbc.connect(DSN)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO Comptes (username, Email, password) VALUES (?, ?, ?)",
+        (username, email, password),
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    # Redirigez l'utilisateur vers la page de connexion
+
+    return redirect("/")
+
+@app.route("/deconnexion")
+def deconnexion():
+    return render_template("connexion.html")
 
 # Partie Produit
 @app.route("/listeproduit", methods=['GET', 'POST'])
