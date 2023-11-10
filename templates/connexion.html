@@ -14,9 +14,12 @@
 <script>
   setTimeout(function(){
     window.location.reload();
-  }, 8000);
+  }, 9000);
 </script>
 {% endblock %}
+
+
+    <section class="main">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -26,8 +29,6 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-
-    <section class="main">
 
         <section class="container">
 
