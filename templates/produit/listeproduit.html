@@ -26,28 +26,30 @@
                       {% endwith %}
                         <h3>Liste des Produits</h3>
                         <table border="2">
-                          <tr>
-                            <td class="id un">IdProduit</td>
-                            <td class="un">NomProduit</td>
-                            <td class="un">Catproduit</td>
-                            <td class="un">PrixUnitaire</td>
-                            <td class="un">Action</td>
-                          </tr>
+                          <thead>
+                            <tr>
+                              <td class="id un">IdProduit</td>
+                              <td class="un">NomProduit</td>
+                              <td class="un">Catproduit</td>
+                              <td class="un">PrixUnitaire</td>
+                              <td class="un">Action</td>
+                            </tr>
+                          </thead>
+                          <tbody>
 
-                          </tr>
-                          {% for row in data %}
-                          <tr>
-                            <td> {{ row[0] }} </td>
-                            <td> {{ row[1] }} </td>
-                            <td> {{ row[2] }} </td>
-                            <td> {{ row[3] }} </td>
-                            <td>
-                              <button class="modifier"><a href="{{ url_for('modifproduit', item_id=row[0]) }}">Modifier</a></button>
-                              <button class="Supprimer"><a href="{{ url_for('confsupproduit', item_id=row[0]) }}">Supprimer</a></button>
-                            </td>
-                          </tr>
-                          {% endfor %}
-
+                            {% for row in data %}
+                            <tr>
+                              <td> {{ row[0] }} </td>
+                              <td> {{ row[1] }} </td>
+                              <td> {{ row[2] }} </td>
+                              <td> {{ row[3] }} </td>
+                              <td>
+                                <button class="modifier"><a href="{{ url_for('modifproduit', item_id=row[0]) }}">Modifier</a></button>
+                                <button class="Supprimer"><a href="{{ url_for('confsupproduit', item_id=row[0]) }}">Supprimer</a></button>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
                         </table>
                     </div>
                 </div>

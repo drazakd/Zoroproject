@@ -3,6 +3,8 @@ from functools import wraps
 from flask import Flask, render_template,url_for, flash, request, redirect, session
 
 import pyodbc
+import hashlib
+
 
 app = Flask(__name__)
 # configuration de la clé flash
@@ -27,6 +29,23 @@ def login_required(f):
             return redirect(url_for('connexion'))
         return f(*args, **kwargs)
     return decorated_function
+
+# hashage
+def hash_password(password):
+    """
+    Hache un mot de passe en utilisant un sel.
+
+    Args:
+        password: Le mot de passe à hasher.
+
+    Returns:
+        Le hash du mot de passe.
+    """
+
+    hash_algorithm = hashlib.sha256()
+    hash_algorithm.update(password.encode("utf-8"))
+    return hash_algorithm.hexdigest()
+
 
 # page de connexion
 @app.route('/', methods=['GET', 'POST'])
@@ -85,6 +104,10 @@ def inscription():
     if not password:
         return render_template("inscription.html", error="Le mot de passe est requis.")
 
+    # Hachez le mot de passe
+
+    password_hash = hash_password(password)
+
     # Insérez les informations d'identification de l'utilisateur dans la base de données
 
     DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
@@ -93,7 +116,7 @@ def inscription():
 
     cursor.execute(
         "INSERT INTO Comptes (username, Email, password) VALUES (?, ?, ?)",
-        (username, email, password),
+        (username, email, password_hash),
     )
     conn.commit()
     cursor.close()
@@ -102,6 +125,7 @@ def inscription():
     # Redirigez l'utilisateur vers la page de connexion
 
     return redirect("/")
+
 
 # route de deconnexion
 @app.route('/deconnexion')

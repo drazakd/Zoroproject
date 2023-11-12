@@ -25,30 +25,34 @@
                         {% endwith %}
                         <h3>Liste des ventes</h3>
                         <table border="2">
-                          <tr>
-                              <td class="id un">IdVente</td>
-                              <td class="un">Nom Produit</td>
-                              <td class="un">Nom Magasin</td>
-                              <td class="un">Quantité</td>
-                              <td class="un">Prix Total</td>
-                              <td class="un">Date vente</td>
-                              <td class="un">Action</td>
-                          </tr>
-                          {% for row in data %}
-                          <tr>
-                            <td> {{ row[0] }} </td>
-                            <td> {{ row[1] }} </td>
-                            <td> {{ row[2] }} </td>
-                            <td> {{ row[3] }} </td>
-                            <td> {{ row[4] }} </td>
-                              <td> {{ row[5] }} </td>
-
-                            <td>
-                              <button class="modifier"><a href="{{ url_for('modifvente', item_id=row[0]) }}">Modifier</a></button>
-                              <button class="Supprimer"><a href="{{ url_for('confsupvente', item_id=row[0]) }}">Supprimer</a></button>
-                            </td>
-                          </tr>
-                          {% endfor %}
+                          <thead>
+                            <tr>
+                                <td class="id un">IdVente</td>
+                                <td class="un">Nom Produit</td>
+                                <td class="un">Nom Magasin</td>
+                                <td class="un">Quantité</td>
+                                <td class="un">Prix Total</td>
+                                <td class="un">Date vente</td>
+                                <td class="un">Action</td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for row in data %}
+                            <tr>
+                              <td> {{ row[0] }} </td>
+                              <td> {{ row[1] }} </td>
+                              <td> {{ row[2] }} </td>
+                              <td> {{ row[3] }} </td>
+                              <td> {{ row[4] }} </td>
+                                <td> {{ row[5] }} </td>
+  
+                              <td>
+                                <button class="modifier"><a href="{{ url_for('modifvente', item_id=row[0]) }}">Modifier</a></button>
+                                <button class="Supprimer"><a href="{{ url_for('confsupvente', item_id=row[0]) }}">Supprimer</a></button>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
 
                         </table>
                     </div>
