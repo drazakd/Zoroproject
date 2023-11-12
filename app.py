@@ -1,10 +1,9 @@
 from functools import wraps
 
-from flask import Flask, render_template,url_for, flash, request, redirect, session
+from flask import Flask, render_template, url_for, flash, request, redirect, session
 
 import pyodbc
 import hashlib
-
 
 app = Flask(__name__)
 # configuration de la clé flash
@@ -20,6 +19,7 @@ def logout():
     for key in session_copy.keys():
         session.pop(key)
 
+
 # configuration de l'authentification requise pour toutes les pages
 def login_required(f):
     @wraps(f)
@@ -28,7 +28,9 @@ def login_required(f):
             flash('Veuillez vous connecter pour accéder à cette page.', 'danger')
             return redirect(url_for('connexion'))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 # hashage
 def hash_password(password):
@@ -51,6 +53,7 @@ def hash_password(password):
 @app.route('/', methods=['GET', 'POST'])
 def connexion():
     return render_template('connexion.html')
+
 
 @app.route('/connexion', methods=['GET', 'POST'])
 def login():
@@ -85,7 +88,6 @@ def login():
             # L'utilisateur n'existe pas ou son mot de passe est incorrect
             flash('Échec de connexion. Veuillez vérifier votre nom d\'utilisateur et votre mot de passe.', 'danger')
             return render_template('connexion.html')
-
 
 
 # route inscription
@@ -136,6 +138,7 @@ def deconnexion():
     # Redirection de l'utilisateur vers la page de connexion
     return redirect(url_for('connexion'))
 
+
 # route accueil
 @app.route("/accueil")
 @login_required
@@ -169,6 +172,7 @@ def listeproduit():
     # Affichage des données dans le template HTML
     return render_template("./produit/listeproduit.html", data=data)
 
+
 # Formulaire du produit
 @app.route("/ajoutproduit", methods=["GET", "POST"])
 @login_required
@@ -200,6 +204,7 @@ def ajoutproduit():
     data = ''
     return render_template("./produit/ajoutproduit.html", data=data)
 
+
 # Route de page de confirmation de suppression produit
 @app.route("/confsupproduit/<int:item_id>", methods=['GET', 'POST'])
 @login_required
@@ -217,6 +222,7 @@ def confsupproduit(item_id):
 
     # flash (f'Le produit numéro {item_id} a été supprimé avec succès !', 'info')
     return render_template("./produit/confsupproduit.html", data=data)
+
 
 # suppression du produit
 @app.route('/supprimeproduit/<int:item_id>', methods=['GET', 'POST'])
@@ -239,6 +245,7 @@ def supprimeproduit(item_id):
 
     flash(f'Le produit numéro {item_id} a été supprimé avec succès !', 'info')
     return redirect(url_for('listeproduit'))
+
 
 # modification du produit
 @app.route('/modifproduit/<int:item_id>', methods=['GET', 'POST'])
@@ -284,6 +291,7 @@ def modifproduit(item_id):
     # Retour du modèle de formulaire du produit
     return render_template('./produit/ajoutproduit.html', data=data)
 
+
 # Route magasin
 @app.route("/listemagasin", methods=['GET', 'POST'])
 @login_required
@@ -309,6 +317,7 @@ def listemagasin():
 
     # Affichage des données dans le template HTML
     return render_template("./magasin/listemagasin.html", data=data)
+
 
 # Formulaire du magasin
 @app.route("/ajoutmagasin", methods=["GET", "POST"])
@@ -342,6 +351,7 @@ def ajoutmagasin():
     data = ''
     return render_template("./magasin/ajoutmagasin.html", data=data)
 
+
 # Route de page de confirmation de suppression magasin
 @app.route("/confsupmagasin/<int:item_id>", methods=['GET', 'POST'])
 @login_required
@@ -359,6 +369,7 @@ def confsupmagasin(item_id):
 
     # flash (f'Le magasin numéro {item_id} a été supprimé avec succès !', 'info')
     return render_template("./magasin/confsupmagasin.html", data=data)
+
 
 # suppression du produit
 @app.route('/supprimemagasin/<int:item_id>', methods=['GET', 'POST'])
@@ -381,6 +392,7 @@ def supprimemagasin(item_id):
 
     flash(f'Le magasin numéro {item_id} a été supprimé avec succès !', 'info')
     return redirect(url_for('listemagasin'))
+
 
 # modification du Magasin
 @app.route('/modifmagasin/<int:item_id>', methods=['GET', 'POST'])
@@ -427,11 +439,11 @@ def modifmagasin(item_id):
     # Retour du modèle de formulaire du magasin
     return render_template('./magasin/ajoutmagasin.html', data=data)
 
+
 # Route vente
 @app.route("/listevente")
 @login_required
 def listevente():
-
     # Connexion à la base de données
     DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
     conn = pyodbc.connect(DSN)
@@ -447,10 +459,10 @@ def listevente():
     conn.close()
     return render_template("./vente/listevente.html", data=data)
 
+
 @app.route("/ajoutvente", methods=["GET", "POST"])
 @login_required
 def ajoutvente():
-
     # Connexion à la base de données
     DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
     conn = pyodbc.connect(DSN)
@@ -483,6 +495,7 @@ def ajoutvente():
     data = ''
     return render_template("./vente/ajoutvente.html", data=data, mags=mags, prods=prods)
 
+
 # page de confirmation de suppression vente
 @app.route("/confsupvente/<int:item_id>", methods=['GET', 'POST'])
 @login_required
@@ -508,6 +521,7 @@ def confsupvente(item_id):
     # flash (f'Le produit numéro {item_id} a été supprimé avec succès !', 'info')
     return render_template("./vente/confsupvente.html", data=data)
 
+
 # suppression de vente
 @app.route('/supprimevente/<int:item_id>', methods=['GET', 'POST'])
 @login_required
@@ -524,6 +538,7 @@ def supprimevente(item_id):
     conn.close()
     flash(f'La vente numéro {item_id} a été supprimé avec succès !', 'info')
     return redirect(url_for('listevente'))
+
 
 @app.route('/modifvente/<int:item_id>', methods=['GET', 'POST'])
 @login_required
@@ -577,12 +592,10 @@ def modifvente(item_id):
                            selected=True)
 
 
-
 # Route stock
 @app.route("/listestock")
 @login_required
 def listestock():
-
     # Connexion à la base de données
     DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
     conn = pyodbc.connect(DSN)
@@ -598,11 +611,11 @@ def listestock():
     conn.close()
     return render_template("./Stock/listestock.html", data=data)
 
+
 # ajout de stock
 @app.route("/ajoutstock", methods=["GET", "POST"])
 @login_required
 def ajoutstock():
-
     # Connexion à la base de données
     DSN = "Driver={SQL Server};Server=DESKTOP-6RB7ER5\\SQLEXPRESS;Database=Zorodb;"
     conn = pyodbc.connect(DSN)
@@ -629,6 +642,7 @@ def ajoutstock():
     data = ''
     return render_template("./Stock/ajoutstock.html", data=data, mags=mags, prods=prods)
 
+
 # page de confirmation de suppression stock
 @app.route("/confsupstock/<int:item_id>", methods=['GET', 'POST'])
 @login_required
@@ -654,6 +668,7 @@ def confsupstock(item_id):
     # flash (f'Le produit numéro {item_id} a été supprimé avec succès !', 'info')
     return render_template("./Stock/confsupstock.html", data=data)
 
+
 # suppression de stock
 @app.route('/supprimestock/<int:item_id>', methods=['GET', 'POST'])
 @login_required
@@ -670,6 +685,7 @@ def supprimestock(item_id):
     conn.close()
     flash(f'La Stock numéro {item_id} a été supprimé avec succès !', 'info')
     return redirect(url_for('listestock'))
+
 
 @app.route('/modifstock/<int:item_id>', methods=['GET', 'POST'])
 @login_required
@@ -715,6 +731,7 @@ def modifstock(item_id):
         return redirect(url_for('listestock'))
     return render_template('./stock/ajoutstock.html', magsel=magsel, prodsel=prodsel, data=data, prods=prods, mags=mags,
                            selected=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
