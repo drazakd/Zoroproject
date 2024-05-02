@@ -73,21 +73,37 @@ def login():
         conn = pyodbc.connect(DSN)
         cursor = conn.cursor()
 
-        # Récupération des données de l'utilisateur à partir de la base de données
-        cursor.execute('SELECT * FROM Comptes WHERE username = ? AND password = ?', (username, password))
+        # Récupération du mot de passe haché de l'utilisateur à partir de la base de données
+        cursor.execute('SELECT username, password FROM Comptes WHERE username = ?', (username,))
         data = cursor.fetchone()
 
-        # Si l'utilisateur existe et son mot de passe est correct
-        if data is not None:
-            # Enregistrement du nom d'utilisateur dans la session
-            session['user_id'] = data[0]
+        # Fermer la connexion à la base de données
+        cursor.close()
+        conn.close()
 
-            # Redirection de l'utilisateur vers la page d'accueil
-            return redirect(url_for('accueil'))
+        # Vérifier si l'utilisateur existe et comparer les mots de passe
+        if data is not None:
+            stored_username, stored_password_hash = data
+
+            # Hacher le mot de passe entré par l'utilisateur
+            password_hash = hash_password(password)
+
+            # Comparer les mots de passe hachés
+            if password_hash == stored_password_hash:
+                # Enregistrement du nom d'utilisateur dans la session
+                session['user_id'] = stored_username
+
+                # Redirection de l'utilisateur vers la page d'accueil
+                return redirect(url_for('accueil'))
+            else:
+                # L'utilisateur n'existe pas ou son mot de passe est incorrect
+                flash('Échec de connexion. Veuillez vérifier votre nom d\'utilisateur et votre mot de passe.', 'danger')
+                return render_template('connexion.html', error="Nom d'utilisateur ou mot de passe incorrect.")
         else:
-            # L'utilisateur n'existe pas ou son mot de passe est incorrect
             flash('Échec de connexion. Veuillez vérifier votre nom d\'utilisateur et votre mot de passe.', 'danger')
-            return render_template('connexion.html')
+            return render_template('connexion.html', error="Nom d'utilisateur ou mot de passe incorrect.")
+    else:
+        return render_template('connexion.html')
 
 
 # route inscription
